@@ -13,30 +13,23 @@ function derivedCurrentPlayer(Gameturns) {
   return curPlayer;
 }
 
-const PLAYERS = {
-  X: 'Player 1',
-  O: 'Player 2'
-};
-
 const initialGameBoard = [
   [null, null, null],
   [null, null, null],
   [null, null, null],
 ];
 
-function App() {
-  const [turns, setTurns] = useState([]);
-  const [players, setPlayers] = useState(PLAYERS);
-
-  const curPlayer = derivedCurrentPlayer(turns);
-
+function deriveGameBoard(turns){
   let gameBoard = [...initialGameBoard.map((slot) => [...slot])];
   for (const turn of turns) {
     const { location, player } = turn;
     const { row, column } = location;
     gameBoard[row][column] = player;
   }
+  return gameBoard;
+}
 
+function deriveWinner(gameBoard, players){
   let winner;
   for (const combination of WINNING_COMBINATIONS) {
     const first = gameBoard[combination[0].row][combination[0].column];
@@ -47,6 +40,21 @@ function App() {
       winner = players[first];
     }
   }
+  return winner;
+}
+
+const PLAYERS = {
+  X: 'Player 1',
+  O: 'Player 2'
+};
+
+function App() {
+  const [turns, setTurns] = useState([]);
+  const [players, setPlayers] = useState(PLAYERS);
+
+  const curPlayer = derivedCurrentPlayer(turns);
+  const gameBoard = deriveGameBoard(turns);
+  const winner = deriveWinner(gameBoard, players);
   const isDraw = turns.length === 9 && !winner;
   function restart(){
     setTurns([]);
